@@ -1,15 +1,26 @@
--- 🐪 Kptak script Release 1.0
+-- 🐪 Kptak script Release 1.2 FIX
 
 local p=game.Players.LocalPlayer
-local c=p.Character or p.CharacterAdded:Wait()
 local UIS=game:GetService("UserInputService")
 local RS=game:GetService("RunService")
 
+local c=p.Character or p.CharacterAdded:Wait()
+
+local function getHum()
+    return c:FindFirstChildOfClass("Humanoid")
+end
+
+local function getHRP()
+    return c:FindFirstChild("HumanoidRootPart")
+end
+
 -- GUI
 local g=Instance.new("ScreenGui",p.PlayerGui)
+g.ResetOnSpawn = false
+
 local f=Instance.new("Frame",g)
-f.Size=UDim2.new(0,400,0,360)
-f.Position=UDim2.new(0.5,-200,0.5,-180)
+f.Size=UDim2.new(0,460,0,380)
+f.Position=UDim2.new(0.5,-230,0.5,-190)
 f.BackgroundColor3=Color3.fromRGB(25,25,25)
 Instance.new("UICorner",f)
 
@@ -23,25 +34,9 @@ end
 -- TITLE
 local title=Instance.new("TextLabel",f)
 title.Size=UDim2.new(1,0,0,40)
-title.Text="🐪 Kptak script Release 1.0"
+title.Text="🐪 Kptak script Release 1.2"
 title.BackgroundTransparency=1
 title.TextColor3=Color3.new(1,1,1)
-
--- HIDE
-local hide=Instance.new("TextButton",f)
-hide.Size=UDim2.new(0,40,0,30)
-hide.Position=UDim2.new(1,-45,0,5)
-hide.Text="-"
-
-local hidden=false
-hide.MouseButton1Click:Connect(function()
-hidden=not hidden
-for _,v in pairs(f:GetChildren()) do
-if v~=title and v~=hide then
-v.Visible=not hidden
-end end
-hide.Text=hidden and "+" or "-"
-end)
 
 -- SCALE BUTTONS
 local plus=Instance.new("TextButton",f)
@@ -56,6 +51,25 @@ minus.Text="-"
 
 plus.MouseButton1Click:Connect(function() resize(0.1) end)
 minus.MouseButton1Click:Connect(function() resize(-0.1) end)
+
+-- HIDE
+local hide=Instance.new("TextButton",f)
+hide.Size=UDim2.new(0,40,0,30)
+hide.Position=UDim2.new(1,-45,0,5)
+hide.Text="-"
+
+local hidden=false
+hide.MouseButton1Click:Connect(function()
+hidden = not hidden
+for _,v in pairs(f:GetChildren()) do
+    if v:IsA("Frame") or v:IsA("TextButton") then
+        if v ~= title and v ~= hide and v ~= plus and v ~= minus then
+            v.Visible = not hidden
+        end
+    end
+end
+hide.Text = hidden and "+" or "-"
+end)
 
 -- DRAG
 local drag=false
@@ -77,7 +91,7 @@ UIS.InputEnded:Connect(function() drag=false end)
 -- TABS
 local function tab(txt,x)
 local b=Instance.new("TextButton",f)
-b.Size=UDim2.new(0,130,0,30)
+b.Size=UDim2.new(0,115,0,30)
 b.Position=UDim2.new(0,x,0,45)
 b.Text=txt
 b.BackgroundColor3=Color3.fromRGB(50,50,50)
@@ -85,9 +99,10 @@ b.TextColor3=Color3.new(1,1,1)
 Instance.new("UICorner",b)
 return b end
 
-local tpTab=tab("TELEPORT",0)
-local visTab=tab("VISUAL",135)
-local plrTab=tab("PLAYER",270)
+local tpTab=tab("TP",0)
+local visTab=tab("VISUAL",115)
+local plrTab=tab("PLAYER",230)
+local bringTab=tab("BRING",345)
 
 -- PAGES
 local function page()
@@ -100,17 +115,20 @@ return p end
 local tpPage=page()
 local visPage=page()
 local plrPage=page()
+local bringPage=page()
 
 local function show(pg)
 tpPage.Visible=false
 visPage.Visible=false
 plrPage.Visible=false
+bringPage.Visible=false
 pg.Visible=true
 end
 
 tpTab.MouseButton1Click:Connect(function() show(tpPage) end)
 visTab.MouseButton1Click:Connect(function() show(visPage) end)
 plrTab.MouseButton1Click:Connect(function() show(plrPage) end)
+bringTab.MouseButton1Click:Connect(function() show(bringPage) end)
 
 show(tpPage)
 
@@ -125,25 +143,9 @@ b.TextColor3=Color3.new(1,1,1)
 Instance.new("UICorner",b)
 return b end
 
--- TELEPORT
-local deer=btn(tpPage,"TP Deer",10)
-local log=btn(tpPage,"TP Log",55)
-local fire=btn(tpPage,"TP Campfire",100)
-
--- VISUAL
-local esp=btn(visPage,"ESP",10)
-local kptak=btn(visPage,"Kptak Mode",55)
-
--- PLAYER
-local sp3=btn(plrPage,"Speed 3x",10)
-local sp4=btn(plrPage,"Speed 4x",55)
-local fly=btn(plrPage,"Fly",100)
-local jump=btn(plrPage,"Infinite Jump",145)
-local up=btn(plrPage,"Teleport Up",190)
-
 -- TP
 local function tp(names)
-local hrp=c:FindFirstChild("HumanoidRootPart")
+local hrp=getHRP()
 if not hrp then return end
 
 local best,dist=nil,math.huge
@@ -158,57 +160,13 @@ end end end end
 
 if best then hrp.CFrame=best.CFrame+Vector3.new(0,5,0) end
 end
+btn(tpPage,"TP Deer",10).MouseButton1Click:Connect(function() tp({"deer"}) end)
+btn(tpPage,"TP Log",55).MouseButton1Click:Connect(function() tp({"log","wood"}) end)
+btn(tpPage,"TP Campfire",100).MouseButton1Click:Connect(function() tp({"campfire","fire"}) end)
 
-deer.MouseButton1Click:Connect(function() tp({"deer"}) end)
-log.MouseButton1Click:Connect(function() tp({"log","wood"}) end)
-fire.MouseButton1Click:Connect(function() tp({"campfire","fire"}) end)
-
--- SPEED
-sp3.MouseButton1Click:Connect(function()
-c:FindFirstChildOfClass("Humanoid").WalkSpeed=48 end)
-
-sp4.MouseButton1Click:Connect(function()
-c:FindFirstChildOfClass("Humanoid").WalkSpeed=64 end)
-
--- FLY (ALPHA 0.8 STYLE)
-local fl=false
-local bv
-
-fly.MouseButton1Click:Connect(function()
-fl=not fl
-local hrp=c:FindFirstChild("HumanoidRootPart")
-if fl then
-bv=Instance.new("BodyVelocity",hrp)
-bv.MaxForce=Vector3.new(1e5,1e5,1e5)
-bv.Velocity=workspace.CurrentCamera.CFrame.LookVector*60
-else
-if bv then bv:Destroy() bv=nil end
-end
-end)
-
-RS.RenderStepped:Connect(function()
-if fl and bv and c:FindFirstChild("HumanoidRootPart") then
-bv.Velocity = workspace.CurrentCamera.CFrame.LookVector * 60
-end
-end)
-
--- INF JUMP
-local inf=false
-jump.MouseButton1Click:Connect(function() inf=not inf end)
-
-UIS.JumpRequest:Connect(function()
-if inf then
-c:FindFirstChildOfClass("Humanoid"):ChangeState(Enum.HumanoidStateType.Jumping)
-end end)
-
--- TP UP
-up.MouseButton1Click:Connect(function()
-c.HumanoidRootPart.CFrame+=Vector3.new(0,50,0)
-end)
-
--- ESP
+-- VISUAL (возврат из 1.1)
 local espOn=false
-esp.MouseButton1Click:Connect(function()
+btn(visPage,"ESP",10).MouseButton1Click:Connect(function()
 espOn=not espOn
 for _,v in pairs(workspace:GetDescendants()) do
 if v:IsA("Model") and v:FindFirstChild("HumanoidRootPart") then
@@ -221,11 +179,9 @@ local h=v:FindFirstChildOfClass("Highlight")
 if h then h:Destroy() end
 end end end end)
 
--- KPTAK MODE
 local km=false
 local original={}
-
-kptak.MouseButton1Click:Connect(function()
+btn(visPage,"Kptak Mode",55).MouseButton1Click:Connect(function()
 km=not km
 for _,v in pairs(c:GetDescendants()) do
 if v:IsA("BasePart") then
@@ -240,7 +196,108 @@ if original[v] then
 v.Color=original[v].Color
 v.Material=original[v].Material
 end
-end
-end end end)
+end end end end)
 
-p.CharacterAdded:Connect(function(x) c=x end)
+-- PLAYER
+btn(plrPage,"Speed 3x",10).MouseButton1Click:Connect(function()
+local h=getHum()
+if h then h.WalkSpeed=48 end
+end)
+
+btn(plrPage,"Speed 4x",55).MouseButton1Click:Connect(function()
+local h=getHum()
+if h then h.WalkSpeed=64 end
+end)
+
+-- FLY
+local fl=false
+local bv
+
+btn(plrPage,"Fly",100).MouseButton1Click:Connect(function()
+fl=not fl
+local hrp=getHRP()
+if not hrp then return end
+
+if fl then
+bv=Instance.new("BodyVelocity",hrp)
+bv.MaxForce=Vector3.new(1e5,1e5,1e5)
+else
+if bv then bv:Destroy() bv=nil end
+end end)
+
+RS.RenderStepped:Connect(function()
+local hrp=getHRP()
+if fl and bv and hrp then
+bv.Velocity=workspace.CurrentCamera.CFrame.LookVector*60
+end end)
+
+-- INF JUMP
+local inf=false
+btn(plrPage,"Infinite Jump",145).MouseButton1Click:Connect(function()
+inf = not inf
+end)
+
+UIS.JumpRequest:Connect(function()
+if inf then
+local h=getHum()
+if h then
+h:ChangeState(Enum.HumanoidStateType.Jumping)
+end
+end
+end)
+
+-- TP UP
+btn(plrPage,"Teleport Up",190).MouseButton1Click:Connect(function()
+local hrp=getHRP()
+if hrp then
+hrp.CFrame += Vector3.new(0,50,0)
+end
+end)
+
+-- BRING (из 1.1 но фикс)
+local function bring(names)
+local hrp=getHRP()
+if not hrp then return end
+
+for _,v in pairs(workspace:GetDescendants()) do
+for _,n in pairs(names) do
+if string.find(string.lower(v.Name),n) then
+local p=v:IsA("BasePart") and v or v:FindFirstChildWhichIsA("BasePart")
+if p then
+p.CFrame = hrp.CFrame * CFrame.new(0,2,-3)
+end end end end
+end
+
+local metal = {Radio={"radio"},Bolt={"bolt"}}
+local fuel = {Coal={"coal"},Fuel={"fuel"},Oil={"oil","barrel"},Log={"log","wood"}}
+
+local function dropdown(par,list,y)
+local keys={}
+for k in pairs(list) do table.insert(keys,k) end
+table.sort(keys)
+
+local sel=keys[1]
+local b=btn(par,sel,y)
+
+b.MouseButton1Click:Connect(function()
+for i,v in ipairs(keys) do
+if v==sel then sel=keys[i+1] or keys[1] break end end
+b.Text=sel
+end)
+
+return function() return list[sel] end
+end
+
+local getM=dropdown(bringPage,metal,10)
+local getF=dropdown(bringPage,fuel,55)
+
+btn(bringPage,"Bring Metal",100).MouseButton1Click:Connect(function() bring(getM()) end)
+btn(bringPage,"Bring Fuel",145).MouseButton1Click:Connect(function() bring(getF()) end)
+
+-- CHARACTER FIX
+p.CharacterAdded:Connect(function(x)
+c=x
+if bv then bv:Destroy() bv=nil end
+end)
+
+print("🐪 Kptak 1.2 FIX LOADED")
