@@ -1,4 +1,4 @@
--- 🐪 Kptak script Release 1.2 FIX
+-- 🐪 Kptak script Release 1.3
 
 local p=game.Players.LocalPlayer
 local UIS=game:GetService("UserInputService")
@@ -34,7 +34,7 @@ end
 -- TITLE
 local title=Instance.new("TextLabel",f)
 title.Size=UDim2.new(1,0,0,40)
-title.Text="🐪 Kptak script Release 1.2"
+title.Text="🐪 Kptak script Release 1.3"
 title.BackgroundTransparency=1
 title.TextColor3=Color3.new(1,1,1)
 
@@ -160,11 +160,12 @@ end end end end
 
 if best then hrp.CFrame=best.CFrame+Vector3.new(0,5,0) end
 end
+
 btn(tpPage,"TP Deer",10).MouseButton1Click:Connect(function() tp({"deer"}) end)
 btn(tpPage,"TP Log",55).MouseButton1Click:Connect(function() tp({"log","wood"}) end)
 btn(tpPage,"TP Campfire",100).MouseButton1Click:Connect(function() tp({"campfire","fire"}) end)
 
--- VISUAL (возврат из 1.1)
+-- VISUAL
 local espOn=false
 btn(visPage,"ESP",10).MouseButton1Click:Connect(function()
 espOn=not espOn
@@ -179,8 +180,10 @@ local h=v:FindFirstChildOfClass("Highlight")
 if h then h:Destroy() end
 end end end end)
 
+-- 🐪 KPTAK MODE
 local km=false
 local original={}
+
 btn(visPage,"Kptak Mode",55).MouseButton1Click:Connect(function()
 km=not km
 for _,v in pairs(c:GetDescendants()) do
@@ -254,7 +257,24 @@ hrp.CFrame += Vector3.new(0,50,0)
 end
 end)
 
--- BRING (из 1.1 но фикс)
+-- 🐪 NOCLIP (FIXED)
+local noclip=false
+
+btn(plrPage,"NoClip",235).MouseButton1Click:Connect(function()
+noclip = not noclip
+end)
+
+RS.Stepped:Connect(function()
+if noclip and c then
+for _,v in pairs(c:GetDescendants()) do
+if v:IsA("BasePart") then
+v.CanCollide = false
+end
+end
+end
+end)
+
+-- BRING
 local function bring(names)
 local hrp=getHRP()
 if not hrp then return end
@@ -300,4 +320,4 @@ c=x
 if bv then bv:Destroy() bv=nil end
 end)
 
-print("🐪 Kptak 1.2 FIX LOADED")
+print("🐪 Kptak 1.3 LOADED")
