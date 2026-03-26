@@ -1,4 +1,4 @@
- -- 🐪 Kptak script Release 1.3
+-- 🐪 Kptak script Release 1.3
 
 local p=game.Players.LocalPlayer
 local UIS=game:GetService("UserInputService")
