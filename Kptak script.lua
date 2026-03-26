@@ -1,8 +1,9 @@
--- 🐪 Kptak script Release 1.3
+-- 🐪 Kptak script Release 1.5 (STABLE BASE 1.3)
 
 local p=game.Players.LocalPlayer
 local UIS=game:GetService("UserInputService")
 local RS=game:GetService("RunService")
+local Lighting=game:GetService("Lighting")
 
 local c=p.Character or p.CharacterAdded:Wait()
 
@@ -34,7 +35,7 @@ end
 -- TITLE
 local title=Instance.new("TextLabel",f)
 title.Size=UDim2.new(1,0,0,40)
-title.Text="🐪 Kptak script Release 1.3"
+title.Text="🐪 Kptak script Release 1.5"
 title.BackgroundTransparency=1
 title.TextColor3=Color3.new(1,1,1)
 
@@ -180,10 +181,9 @@ local h=v:FindFirstChildOfClass("Highlight")
 if h then h:Destroy() end
 end end end end)
 
--- 🐪 KPTAK MODE
+-- KPTAK MODE
 local km=false
 local original={}
-
 btn(visPage,"Kptak Mode",55).MouseButton1Click:Connect(function()
 km=not km
 for _,v in pairs(c:GetDescendants()) do
@@ -200,6 +200,25 @@ v.Color=original[v].Color
 v.Material=original[v].Material
 end
 end end end end)
+
+-- 🌟 FULBRIGHT (НОВОЕ)
+local fb=false
+local oldAmbient, oldBrightness
+
+btn(visPage,"Fulbright",100).MouseButton1Click:Connect(function()
+fb = not fb
+
+if fb then
+oldAmbient = Lighting.Ambient
+oldBrightness = Lighting.Brightness
+
+Lighting.Ambient = Color3.new(1,1,1)
+Lighting.Brightness = 3
+else
+if oldAmbient then Lighting.Ambient = oldAmbient end
+if oldBrightness then Lighting.Brightness = oldBrightness end
+end
+end)
 
 -- PLAYER
 btn(plrPage,"Speed 3x",10).MouseButton1Click:Connect(function()
@@ -245,21 +264,16 @@ if inf then
 local h=getHum()
 if h then
 h:ChangeState(Enum.HumanoidStateType.Jumping)
-end
-end
-end)
+end end end)
 
 -- TP UP
 btn(plrPage,"Teleport Up",190).MouseButton1Click:Connect(function()
 local hrp=getHRP()
-if hrp then
-hrp.CFrame += Vector3.new(0,50,0)
-end
+if hrp then hrp.CFrame += Vector3.new(0,50,0) end
 end)
 
--- 🐪 NOCLIP (FIXED)
+-- NOCLIP
 local noclip=false
-
 btn(plrPage,"NoClip",235).MouseButton1Click:Connect(function()
 noclip = not noclip
 end)
@@ -269,12 +283,9 @@ if noclip and c then
 for _,v in pairs(c:GetDescendants()) do
 if v:IsA("BasePart") then
 v.CanCollide = false
-end
-end
-end
-end)
+end end end end)
 
--- BRING
+-- BRING (оставил как есть)
 local function bring(names)
 local hrp=getHRP()
 if not hrp then return end
@@ -320,4 +331,4 @@ c=x
 if bv then bv:Destroy() bv=nil end
 end)
 
-print("🐪 Kptak 1.3 LOADED")
+print("🐪 Kptak 1.5 STABLE LOADED")
